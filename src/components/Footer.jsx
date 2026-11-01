@@ -1,9 +1,7 @@
 import { FaArrowUp } from "react-icons/fa";
 
 export default function Footer() {
-  const year = new Date().getFullYear();
-
-  const scrollToTop = (e) => {
+    const scrollToTop = (e) => {
     e.preventDefault();
     window.scrollTo({ top: 0, behavior: "smooth" });
     history.pushState(null, "", "#home");
@@ -12,7 +10,7 @@ export default function Footer() {
   return (
     <footer className="flex w-full flex-col items-center justify-between gap-4 bg-[#20242c] px-6 py-6 text-center font-['Poppins',sans-serif] sm:flex-row sm:text-left md:px-10 xl:px-[100px]">
       <p className="text-sm text-white md:text-base">
-        Copyright &copy; {year} by Ashwin Maharjan | All Rights Reserved.
+        Copyright &copy; 2025 by Ashwin Maharjan | All Rights Reserved.
       </p>
 
       <a
