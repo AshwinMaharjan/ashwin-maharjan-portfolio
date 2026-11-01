@@ -144,7 +144,7 @@ export default function Projects() {
               src={project.image}
               alt={project.title}
               loading="lazy"
-              className="aspect-video w-full object-cover"
+              className="aspect-[4/3] w-full object-cover"
             />
 
             <div className="flex flex-1 flex-col px-6 pb-6 pt-6 text-center">
@@ -193,4 +193,4 @@ export default function Projects() {
       </div>
     </section>
   );
-}
+}git add src/assets/pages/Projects.jsx
