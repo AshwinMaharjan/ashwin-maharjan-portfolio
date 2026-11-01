@@ -13,6 +13,7 @@ export default function Header() {
   const [active, setActive] = useState("Home");
   const [open, setOpen] = useState(false);
   const headerRef = useRef(null);
+  const openedAt = useRef(0); // scroll position when the mobile menu was opened
 
   // Highlight the link of the section currently in view
   // (same logic as your old script.js), and close the mobile menu on scroll.
@@ -27,7 +28,9 @@ export default function Header() {
           setActive(label);
         }
       });
-      setOpen(false);
+      // Close the mobile menu only when the user has really scrolled away
+      // from where it was opened (ignores tiny layout-caused scroll events)
+      if (Math.abs(top - openedAt.current) > 40) setOpen(false);
     };
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
@@ -88,7 +91,10 @@ export default function Header() {
           type="button"
           aria-label="Toggle menu"
           aria-expanded={open}
-          onClick={() => setOpen(!open)}
+          onClick={() => {
+            openedAt.current = window.scrollY;
+            setOpen(!open);
+          }}
           className="flex h-10 w-10 flex-col items-center justify-center gap-1.5 md:hidden"
         >
           <span
@@ -111,7 +117,7 @@ export default function Header() {
 
       {/* Mobile nav */}
       {open && (
-        <nav className="border-t border-white/10 md:hidden">
+        <nav className="absolute left-0 right-0 top-full border-t border-white/10 bg-[#20242c] shadow-[0_10px_20px_rgba(0,0,0,0.35)] md:hidden">
           <ul className="flex flex-col px-6 py-4">
             {links.map(({ label, href }) => (
               <li key={label}>
