@@ -3,10 +3,9 @@ import Footer from "./components/Footer";
 import Home from "./assets/pages/Home";
 import About from "./assets/pages/About";
 import Skills from "./assets/pages/Skills";
+import Projects from "./assets/pages/Projects";
 import CV from "./assets/pages/CV";
 import Contact from "./assets/pages/Contact";
-// When the Projects page is ready, import it and swap it in for its placeholder:
-// import Projects from "./assets/pages/Projects";
 
 export default function App() {
   return (
@@ -17,11 +16,7 @@ export default function App() {
         <Home />
         <About />
         <Skills />
-
-        {/* Keep the id on the section so the header link and scroll
-            highlighting keep working when you replace this placeholder. */}
-        <section id="projects" className="min-h-screen" />
-
+        <Projects />
         <CV />
         <Contact />
       </main>
