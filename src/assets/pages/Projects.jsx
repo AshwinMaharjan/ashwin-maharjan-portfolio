@@ -193,4 +193,4 @@ export default function Projects() {
       </div>
     </section>
   );
-}git add src/assets/pages/Projects.jsx
+}
