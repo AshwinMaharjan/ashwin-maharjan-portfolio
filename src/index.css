@@ -1,10 +1,31 @@
 @import "tailwindcss";
 
-   @keyframes float {
-     0%, 100% { transform: translateY(0); }
-     50% { transform: translateY(-24px); }
-   }
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-24px);
+  }
+}
 
-   html {
-     scroll-padding-top: 80px;
-   }
+html {
+  scroll-padding-top: 80px;
+}
+
+@theme {
+  --color-primary: #22d3ee;
+  --color-primary-hover: #06b6d4;
+  --color-secondary: #818cf8;
+  --color-accent: #fbbf24;
+  --color-bg: #0b1120;
+  --color-surface: #131b2e;
+  --color-line: #1e293b;
+  --color-heading: #f1f5f9;
+  --color-body: #94a3b8;
+  --color-muted: #64748b;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-heading: "Space Grotesk", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
