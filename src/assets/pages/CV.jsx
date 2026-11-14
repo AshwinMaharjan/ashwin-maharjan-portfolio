@@ -7,6 +7,7 @@ import {
   FaMapMarkerAlt,
   FaEnvelope,
   FaFilePdf,
+  FaAward,
 } from "react-icons/fa";
 
 // The PDF lives in src/assets and is bundled into the page (?inline), so the
@@ -37,12 +38,18 @@ const achievements = [
   "Strong foundation in UI/UX design principles",
 ];
 
+const focusRing =
+  "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary";
+
 function BulletList({ items }) {
   return (
-    <ul className="mt-3 space-y-2">
+    <ul className="mt-4 space-y-3">
       {items.map((item) => (
-        <li key={item} className="flex gap-2 text-sm leading-relaxed text-gray-200">
-          <span className="mt-0.5 text-xs text-[#00e5ff]">&#9656;</span>
+        <li key={item} className="flex gap-3 text-[0.95rem] leading-relaxed text-body">
+          <span
+            aria-hidden="true"
+            className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary"
+          />
           <span>{item}</span>
         </li>
       ))}
@@ -52,8 +59,10 @@ function BulletList({ items }) {
 
 function SectionTitle({ icon: Icon, children }) {
   return (
-    <h3 className="flex items-center gap-2 text-lg font-bold text-[#00e5ff] md:text-xl">
-      <Icon />
+    <h3 className="flex items-center gap-3 font-heading text-xl font-semibold tracking-tight text-heading">
+      <span className="grid h-9 w-9 place-items-center rounded-xl border border-primary/20 bg-primary/10 text-base text-primary">
+        <Icon />
+      </span>
       {children}
     </h3>
   );
@@ -61,6 +70,7 @@ function SectionTitle({ icon: Icon, children }) {
 
 export default function CV() {
   const headingRef = useRef(null);
+  const contentRef = useRef(null);
   const [pdfUrl, setPdfUrl] = useState(null);
   const [pdfError, setPdfError] = useState(false);
 
@@ -91,116 +101,147 @@ export default function CV() {
     };
   }, []);
 
-  // Same ScrollReveal settings as your old script.js: .heading from top
+  // One calm reveal (skipped when the visitor prefers reduced motion)
   useEffect(() => {
-    const el = headingRef.current;
-    const sr = ScrollReveal({ distance: "80px", duration: 2000, delay: 350 });
-    sr.reveal(el, { origin: "top" });
-    return () => sr.clean(el);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const els = [headingRef.current, contentRef.current];
+    const sr = ScrollReveal({
+      distance: "40px",
+      duration: 1100,
+      delay: 150,
+      easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+    });
+    sr.reveal(headingRef.current, { origin: "bottom" });
+    sr.reveal(contentRef.current, { origin: "bottom", delay: 300 });
+    return () => els.forEach((el) => sr.clean(el));
   }, []);
 
   return (
     <section
       id="cv"
-      className="flex min-h-screen w-full flex-col justify-center bg-[#20242c] px-6 py-20 md:px-10 xl:px-[100px]"
+      className="relative isolate w-full overflow-hidden border-t border-line bg-bg px-6 py-16 md:px-10 md:py-20 xl:px-[100px]"
     >
-      <h2
-        ref={headingRef}
-        className="text-center text-4xl font-bold text-white md:text-5xl"
-      >
-        My <span className="text-[#00e5ff]">CV</span>
-      </h2>
+      {/* Background: one soft glow */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute -right-40 top-20 h-[28rem] w-[28rem] rounded-full bg-secondary/10 blur-3xl" />
+      </div>
 
-      {/* Quick resume card */}
-      <div className="mt-12 w-full rounded-2xl border border-[#00e5ff]/25 bg-[#2a2f3a] px-6 py-8 md:px-10 md:py-10">
-        {/* Header */}
-        <div className="border-b border-white/15 pb-6 text-center">
-          <h2 className="text-3xl font-bold text-[#00e5ff] md:text-4xl">
-            Ashwin Maharjan
+      <div className="mx-auto w-full max-w-[1200px]">
+        <div ref={headingRef} className="text-center">
+          <h2 className="font-heading text-4xl font-bold tracking-tight text-heading md:text-5xl">
+            My CV
           </h2>
-          <h3 className="mt-2 text-base font-semibold text-white md:text-lg">
-            Web Developer &amp; Graphic Designer
-          </h3>
-          <p className="mt-3 flex items-center justify-center gap-2 text-sm text-gray-300">
-            <FaMapMarkerAlt /> Kathmandu, Nepal
-          </p>
-          <p className="mt-1 flex items-center justify-center gap-2 text-sm text-gray-300">
-            <FaEnvelope /> maharjan.ashwin098@gmail.com
+          <p className="mx-auto mt-4 max-w-xl text-base text-body md:text-lg">
+            A quick summary here, and the full PDF just below.
           </p>
         </div>
 
-        {/* Two columns */}
-        <div className="mt-8 grid grid-cols-1 gap-10 md:grid-cols-2">
-          {/* Left column */}
-          <div className="space-y-8">
-            <div>
-              <SectionTitle icon={FaBriefcase}>Projects &amp; Experience</SectionTitle>
-              <BulletList items={experience} />
+        <div ref={contentRef} className="mt-12 space-y-6">
+          {/* Resume summary */}
+          <div className="overflow-hidden rounded-2xl border border-line bg-surface/60 backdrop-blur-md">
+            {/* Identity */}
+            <div className="flex flex-col gap-4 border-b border-line p-6 md:flex-row md:items-end md:justify-between md:p-8">
+              <div>
+                <h3 className="font-heading text-3xl font-bold tracking-tight text-heading md:text-4xl">
+                  Ashwin Maharjan
+                </h3>
+                <p className="mt-1 text-base font-medium text-primary md:text-lg">
+                  Web Developer &amp; Graphic Designer
+                </p>
+              </div>
+              <div className="space-y-1.5 text-sm text-body md:text-right">
+                <p className="flex items-center gap-2 md:justify-end">
+                  <FaMapMarkerAlt className="text-muted" /> Kathmandu, Nepal
+                </p>
+                <p className="flex items-center gap-2 break-all md:justify-end">
+                  <FaEnvelope className="text-muted" /> maharjan.ashwin098@gmail.com
+                </p>
+              </div>
             </div>
 
-            <div>
-              <SectionTitle icon={FaCode}>Key Skills</SectionTitle>
-              <div className="mt-4 flex flex-wrap gap-2.5">
-                {keySkills.map((skill) => (
-                  <span
-                    key={skill}
-                    className="rounded-full border border-[#00e5ff]/30 bg-white/10 px-4 py-1.5 text-xs font-bold text-white"
-                  >
-                    {skill}
-                  </span>
-                ))}
+            {/* Two columns */}
+            <div className="grid grid-cols-1 md:grid-cols-2">
+              {/* Left */}
+              <div className="space-y-8 p-6 md:p-8">
+                <div>
+                  <SectionTitle icon={FaBriefcase}>Projects &amp; experience</SectionTitle>
+                  <BulletList items={experience} />
+                </div>
+
+                <div>
+                  <SectionTitle icon={FaCode}>Key skills</SectionTitle>
+                  <ul className="mt-4 flex flex-wrap gap-2">
+                    {keySkills.map((skill) => (
+                      <li
+                        key={skill}
+                        className="rounded-full border border-line bg-bg/60 px-3.5 py-1.5 text-sm font-medium text-heading"
+                      >
+                        {skill}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              {/* Right */}
+              <div className="space-y-8 border-t border-line p-6 md:border-l md:border-t-0 md:p-8">
+                <div>
+                  <SectionTitle icon={FaGraduationCap}>Education</SectionTitle>
+                  <h4 className="mt-4 text-base font-semibold text-heading">
+                    Bachelor of Information Management (BIM)
+                  </h4>
+                  <p className="mt-1 text-[0.95rem] text-body">
+                    Prime College (2022 – Pursuing)
+                  </p>
+                  
+                </div>
+
+                <div>
+                  <SectionTitle icon={FaAward}>Achievements</SectionTitle>
+                  <BulletList items={achievements} />
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Right column */}
-          <div>
-            <SectionTitle icon={FaGraduationCap}>Education</SectionTitle>
-            <h4 className="mt-4 text-sm font-bold text-white md:text-base">
-              Bachelor of Information Management (BIM)
-            </h4>
-            <p className="mt-1 text-sm text-gray-300">
-              Prime College (2022-Pursuing)
-            </p>
-            <p className="mt-1 text-sm text-gray-300">
-              <strong className="font-bold">Specialization:</strong> Web Developer
-              &amp; Graphic Designer
-            </p>
+          {/* PDF viewer with a small toolbar */}
+          <div className="overflow-hidden rounded-2xl border border-line bg-surface/60">
+            <div className="flex items-center justify-between gap-4 border-b border-line px-4 py-3 md:px-6">
+              <div className="flex min-w-0 items-center gap-3">
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-primary/20 bg-primary/10 text-primary">
+                  <FaFilePdf />
+                </span>
+                <span className="truncate text-sm font-medium text-heading">
+                  Ashwin Maharjan CV
+                </span>
+              </div>
 
-            <h4 className="mt-8 text-sm font-bold text-white md:text-base">
-              Achievements:
-            </h4>
-            <BulletList items={achievements} />
+              <a
+                href={pdfUrl ?? undefined}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-disabled={!pdfUrl}
+                className={`inline-flex shrink-0 items-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-bg shadow-[0_0_24px_-8px] shadow-primary transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary-hover motion-reduce:transition-none ${focusRing} ${
+                  pdfUrl ? "" : "pointer-events-none opacity-50"
+                }`}
+              >
+                View CV
+              </a>
+            </div>
+
+            {pdfUrl ? (
+              <iframe
+                src={`${pdfUrl}#view=FitH`}
+                title="Ashwin Maharjan CV"
+                className="h-[480px] w-full md:h-[640px]"
+              />
+            ) : (
+              <div className="flex h-[240px] w-full items-center justify-center px-6 text-center text-sm text-body md:h-[320px]">
+                {pdfError ? "Couldn't load the CV preview." : "Loading CV..."}
+              </div>
+            )}
           </div>
         </div>
-      </div>
-
-      {/* PDF viewer */}
-      <div className="mt-8 w-full overflow-hidden rounded-2xl border border-[#00e5ff]/25">
-        {pdfUrl ? (
-          <iframe
-            src={`${pdfUrl}#view=FitH`}
-            title="Ashwin Maharjan CV"
-            className="h-[480px] w-full md:h-[640px]"
-          />
-        ) : (
-          <div className="flex h-[240px] w-full items-center justify-center px-6 text-center text-sm text-gray-300 md:h-[320px]">
-            {pdfError ? "Couldn't load the CV preview." : "Loading CV..."}
-          </div>
-        )}
-      </div>
-
-      {/* View CV button */}
-      <div className="mt-8 flex justify-center">
-        <a
-          href={pdfUrl ?? undefined}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 rounded-full bg-[#00e5ff] px-8 py-3 text-base font-bold text-[#20242c] shadow-[0_0_20px_rgba(0,229,255,0.5)] transition duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(0,229,255,0.8)]"
-        >
-          <FaFilePdf />
-          View CV
-        </a>
       </div>
     </section>
   );
