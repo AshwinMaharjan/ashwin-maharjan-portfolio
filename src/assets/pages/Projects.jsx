@@ -87,16 +87,29 @@ const filters = [
   { label: "Frontend", value: "frontend" },
 ];
 
+const categoryLabel = { fullstack: "Full Stack", frontend: "Frontend" };
+
+const focusRing =
+  "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary";
+
 export default function Projects() {
   const headingRef = useRef(null);
+  const contentRef = useRef(null);
   const [filter, setFilter] = useState("all");
 
-  // Same ScrollReveal settings as your old script.js: .heading from top
+  // One calm reveal (skipped when the visitor prefers reduced motion)
   useEffect(() => {
-    const el = headingRef.current;
-    const sr = ScrollReveal({ distance: "80px", duration: 2000, delay: 350 });
-    sr.reveal(el, { origin: "top" });
-    return () => sr.clean(el);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const els = [headingRef.current, contentRef.current];
+    const sr = ScrollReveal({
+      distance: "40px",
+      duration: 1100,
+      delay: 150,
+      easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+    });
+    sr.reveal(headingRef.current, { origin: "bottom" });
+    sr.reveal(contentRef.current, { origin: "bottom", delay: 300 });
+    return () => els.forEach((el) => sr.clean(el));
   }, []);
 
   const visibleProjects =
@@ -105,91 +118,114 @@ export default function Projects() {
   return (
     <section
       id="projects"
-      className="flex min-h-screen w-full flex-col justify-center bg-[#323946] px-6 py-20 md:px-10 xl:px-[100px]"
+      className="relative isolate w-full overflow-hidden border-t border-line bg-bg px-6 py-16 md:px-10 md:py-20 xl:px-[100px]"
     >
-      <h2
-        ref={headingRef}
-        className="text-center text-4xl font-bold text-white md:text-5xl"
-      >
-        Latest <span className="text-[#00e5ff]">Projects</span>
-      </h2>
-
-      {/* Filter buttons */}
-      <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-        {filters.map(({ label, value }) => (
-          <button
-            key={value}
-            type="button"
-            onClick={() => setFilter(value)}
-            aria-pressed={filter === value}
-            className={`rounded-full border-2 px-7 py-2.5 text-sm font-bold transition duration-300 md:text-base ${
-              filter === value
-                ? "border-[#00e5ff] bg-[#00e5ff] text-[#20242c] shadow-[0_0_20px_rgba(0,229,255,0.5)]"
-                : "border-[#00e5ff]/40 bg-white/10 text-white hover:border-[#00e5ff] hover:text-[#00e5ff]"
-            }`}
-          >
-            {label}
-          </button>
-        ))}
+      {/* Background: one soft glow */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute left-1/2 top-0 h-80 w-[40rem] -translate-x-1/2 rounded-full bg-secondary/10 blur-3xl" />
       </div>
 
-      {/* Project cards */}
-      <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
-        {visibleProjects.map((project) => (
-          <article
-            key={project.title}
-            className="flex flex-col overflow-hidden rounded-2xl bg-[#20242c] shadow-[0_8px_24px_rgba(0,0,0,0.3)] transition duration-300 hover:-translate-y-2 hover:shadow-[0_0_25px_rgba(0,229,255,0.3)]"
-          >
-            <img
-              src={project.image}
-              alt={project.title}
-              loading="lazy"
-              className="aspect-[4/3] w-full object-cover"
-            />
+      <div className="mx-auto w-full max-w-[1200px]">
+        <div ref={headingRef} className="text-center">
+          <h2 className="font-heading text-4xl font-bold tracking-tight text-heading md:text-5xl">
+            Latest projects
+          </h2>
+          <p className="mx-auto mt-4 max-w-xl text-base text-body md:text-lg">
+            A few things I&apos;ve built, from college systems to React apps.
+          </p>
+        </div>
 
-            <div className="flex flex-1 flex-col px-6 pb-6 pt-6 text-center">
-              <h3 className="text-xl font-bold text-[#00e5ff] md:text-2xl">
-                {project.title}
-              </h3>
-
-              <p className="mt-4 text-sm leading-relaxed text-gray-200">
-                {project.description}
-              </p>
-
-              {/* Tech tags */}
-              <div className="mt-auto flex flex-wrap justify-center gap-2 pt-6">
-                {project.tech.map((tag) => (
-                  <span
-                    key={tag}
-                    className="rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-bold text-white"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-
-              {/* Links */}
-              <div className="mt-6 flex flex-wrap justify-center gap-3">
-                <a
-                  href={project.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border-2 border-[#00e5ff] px-5 py-2.5 text-sm font-bold text-[#00e5ff] transition duration-300 hover:bg-[#00e5ff] hover:text-[#20242c] hover:shadow-[0_0_18px_rgba(0,229,255,0.6)]"
+        <div ref={contentRef}>
+          {/* Filter: segmented control */}
+          <div className="mt-10 flex justify-center">
+            <div
+              role="group"
+              aria-label="Filter projects"
+              className="inline-flex rounded-full border border-line bg-surface/60 p-1.5 backdrop-blur"
+            >
+              {filters.map(({ label, value }) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setFilter(value)}
+                  aria-pressed={filter === value}
+                  className={`rounded-full px-5 py-2 text-sm font-medium transition-all duration-300 motion-reduce:transition-none md:px-6 ${focusRing} ${
+                    filter === value
+                      ? "bg-primary text-bg shadow-[0_0_20px_-6px] shadow-primary"
+                      : "text-body hover:text-heading"
+                  }`}
                 >
-                  <FaGithub /> GitHub
-                </a>
-                <a
-                  href={project.demo}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border-2 border-[#00e5ff] px-5 py-2.5 text-sm font-bold text-[#00e5ff] transition duration-300 hover:bg-[#00e5ff] hover:text-[#20242c] hover:shadow-[0_0_18px_rgba(0,229,255,0.6)]"
-                >
-                  <FaExternalLinkAlt /> Live Demo
-                </a>
-              </div>
+                  {label}
+                </button>
+              ))}
             </div>
-          </article>
-        ))}
+          </div>
+
+          {/* Project cards */}
+          <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {visibleProjects.map((project) => (
+              <article
+                key={project.title}
+                className="group flex flex-col overflow-hidden rounded-2xl border border-line bg-surface/60 backdrop-blur-md transition-all duration-500 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_24px_48px_-24px] hover:shadow-primary/30 starting:translate-y-3 starting:opacity-0 motion-reduce:transition-none"
+              >
+                {/* Screenshot */}
+                <div className="relative aspect-[16/10] w-full overflow-hidden border-b border-line bg-bg">
+                  <img
+                    src={project.image}
+                    alt={`${project.title} screenshot`}
+                    loading="lazy"
+                    className="h-full w-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105 motion-reduce:transition-none"
+                  />
+                  <span className="absolute left-3 top-3 rounded-full border border-line bg-bg/80 px-3 py-1 text-xs font-medium text-heading backdrop-blur">
+                    {categoryLabel[project.category]}
+                  </span>
+                </div>
+
+                <div className="flex flex-1 flex-col p-6">
+                  <h3 className="font-heading text-xl font-semibold leading-snug tracking-tight text-heading">
+                    {project.title}
+                  </h3>
+
+                  <p className="mt-3 line-clamp-4 text-[0.95rem] leading-relaxed text-body">
+                    {project.description}
+                  </p>
+
+                  {/* Tech tags */}
+                  <ul className="mt-auto flex flex-wrap gap-2 pt-5">
+                    {project.tech.map((tag) => (
+                      <li
+                        key={tag}
+                        className="rounded-full border border-line bg-bg/60 px-3 py-1 text-xs font-medium text-body"
+                      >
+                        {tag}
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* Links */}
+                  <div className="mt-6 flex gap-3 border-t border-line pt-5">
+                    <a
+                      href={project.demo}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-bg transition-all duration-300 hover:bg-primary-hover hover:shadow-[0_0_20px_-6px] hover:shadow-primary motion-reduce:transition-none ${focusRing}`}
+                    >
+                      <FaExternalLinkAlt className="text-xs" /> Live demo
+                    </a>
+                    <a
+                      href={project.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-line px-5 py-2.5 text-sm font-semibold text-heading transition-colors duration-300 hover:border-primary/60 hover:text-primary ${focusRing}`}
+                    >
+                      <FaGithub /> GitHub
+                    </a>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );
